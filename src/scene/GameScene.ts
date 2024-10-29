@@ -1,6 +1,6 @@
 
 import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three";
-import { ARButton } from 'three/addons/webxr/ARButton.js';
+
 import ARManager from '../ARManager';
 
 class GameScene {
@@ -36,9 +36,7 @@ class GameScene {
             throw "unable to find target element";
         targetElement.appendChild(this.renderer.domElement);
 
-        // Add AR button to the scene
-        document.body.appendChild(ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] }));
-
+        
         const aspectRatio = this.width / this.height;
         this.camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
@@ -48,7 +46,7 @@ class GameScene {
         this.scene.add(cube);
 
         this.arManager = new ARManager(this.renderer, this.camera, cube);
-        console.log(this.renderer);
+
         window.addEventListener("resize", this.resize, false);
 
         this.renderer.setAnimationLoop(this.update);

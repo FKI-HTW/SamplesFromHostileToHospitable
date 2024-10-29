@@ -1,5 +1,6 @@
 
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from "three";
+import { ARButton } from 'three/addons/webxr/ARButton.js';
 
 class ARManager {
     private hitTestSource: XRHitTestSource | null = null;
@@ -15,6 +16,8 @@ class ARManager {
     }
 
     public setupAR() {
+        // Add AR button to the scene
+        document.body.appendChild(ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] }));
         this.renderer.xr.addEventListener('sessionstart', () => {
         console.log('AR session started');
         this.requestHitTestSource();
@@ -43,7 +46,6 @@ class ARManager {
         const referenceSpace = this.renderer.xr.getReferenceSpace();
         // console.log(referenceSpace);
         if (referenceSpace && this.hitTestSource) {
-            console.log("trackHitSource");
             const hitTestResults = frame.getHitTestResults(this.hitTestSource);
 
             if (hitTestResults.length > 0) {
