@@ -1,6 +1,11 @@
 [
     {
         "ID": 0,
-        "pathModel": "assets/models/example.glb"
+        "contentName": "Spot 0",
+        "pathModel": "assets/models/example.glb",
+        "pathStencil": "assets/models/example.glb",
+        "pathAudioFiles": [
+            "assets/audios/test1.mp3", 
+            "assets/audios/test2.mp3"]
     }
 ]

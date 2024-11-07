@@ -7,7 +7,7 @@ import { AnimationMixer, Clock, PerspectiveCamera, Scene, WebGLRenderer } from '
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 
 export default class Timeline {
-    private json: String;
+    json: String;
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     gltfLoader: GLTFLoader;
@@ -48,7 +48,6 @@ export default class Timeline {
     this.eventAfterLoad = this.eventAfterLoad.bind(this);
     this.assignToParent = this.assignToParent.bind(this);
     this.fadeModelIn = this.fadeModelIn.bind(this);
-    this.fadeModelOut = this.fadeModelOut.bind(this);
     this.playAnimation = this.playAnimation.bind(this);
     this.playAmbientSound = this.playAmbientSound.bind(this);
     this.startVoiceOver = this.startVoiceOver.bind(this);
@@ -72,20 +71,9 @@ export default class Timeline {
   }
 
   async loadDataFromJSON() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         try {
-            this.schablonePath = this.json["pathSchablone"];
-            this.mainModelPath = this.json["pathModel"];
-
-            this.voiceOversPath = this.json["pathAudioFiles"];
-            this.subtitlesPath = this.json["pathSubtitles"];
-
-            // TO delete
-            this.subtitles = this.json["subtitlesAudio"];
-            this.subtitlesDurations = this.json["subtitlesDurations"];
-
-            this.ambientSoundPath = this.json["pathAmbientSound"];
-            this.decorationsPath = this.json["pathDecoration"];
+            this.mainModelPath = this.json.pathModel;
 
             resolve(); // Resolve the promise when done
         } catch (error) {
@@ -272,35 +260,9 @@ export default class Timeline {
     return audio;
   }
 
-  addDecorations(){
-    if(this.decorationsPath === "" && this.decorationsPath.length === 0) return;
-
-    this.decorator = new DecorationInstantiator(this.scene, this.gltfLoader, 20, this.decorationsPath, this.mainModel.scene);
-    this.decorator.orbitInstantiatorObject();
-    this.decorator.raycastForInstantiation();
-    // decorator.grow(); // TODO test without
-  }
-
-  addDecorationsOnPlane(width, height, center, maxAmount){
-    this.decorator = new DecorationInstantiator(this.scene, this.gltfLoader, maxAmount, this.decorationsPath, this.mainModel.scene, width, height, center);
-    this.decorator.moveSphereRandomlyAroundPlane();
-    this.decorator.raycastForInstantiation();
-  }
-  addDecorationsOnMesh(mesh, modelPath, intervalX, durationY){
-    const decorator = new meshDecorator(mesh, this.scene, modelPath, intervalX, durationY);
-    decorator.start();
-  }
-
-  addDecorationPlane(path, size){
-    if(!this.mainModel) return;
-
-    this.decorationPlane = new planeRaycaster(this.scene, this.camera, this.renderer, this.mainModel.scene, path, this.gltfLoader, size);
-    console.log("rayPlane ADDED");
-  }
-
   // Paramater needs a .scene object
-  makeModelTransparent(model, transparency = 0.5){
-    model.traverse((node) => {
+  makeModelTransparent(model: any, transparency = 0.5){
+    model.traverse((node: any) => {
         if (node.isMesh) {
           // Check if the node is a mesh
           const materials = Array.isArray(node.material) ? node.material : [node.material];
