@@ -35,32 +35,9 @@ export default class Timeline {
     this.clock = new THREE.Clock();
     this.lastTime = 0;
 
-    
-    this.bindMethods();
   }
 
-  bindMethods() {
-    this.loadDataFromJSON = this.loadDataFromJSON.bind(this);
-    this.loadSchablone = this.loadSchablone.bind(this);
-    this.start = this.start.bind(this);
-    this.loadModel = this.loadModel.bind(this);
-    this.loadMainModel = this.loadMainModel.bind(this);
-    this.eventAfterLoad = this.eventAfterLoad.bind(this);
-    this.assignToParent = this.assignToParent.bind(this);
-    this.fadeModelIn = this.fadeModelIn.bind(this);
-    this.playAnimation = this.playAnimation.bind(this);
-    this.playAmbientSound = this.playAmbientSound.bind(this);
-    this.startVoiceOver = this.startVoiceOver.bind(this);
-    this.loadAudio = this.loadAudio.bind(this);
-    this.showSubModels = this.showSubModels.bind(this);
-    this.addDecorations = this.addDecorations.bind(this);
-    this.addDecorationPlane = this.addDecorationPlane.bind(this);
-    this.makeModelTransparent = this.makeModelTransparent.bind(this);
-    this.wait = this.wait.bind(this);
-    this.loadMap = this.loadMap.bind(this);
-    this.update = this.update.bind(this);
-    this.animate = this.animate.bind(this);  // Achtung: Hier könnte es zu Problemen mit requestAnimationFrame kommen, wenn nicht korrekt gehandhabt
-  }
+
   
   // When the user lands in the AR screen, called in main script
   public whenSessionStart(){
@@ -83,12 +60,12 @@ export default class Timeline {
 }
 
 
-  loadModel(modelPath) {
+  loadModel(modelPath: string) {
     return new Promise((resolve, reject) => {
       this.gltfLoader.load(modelPath, (gltf) => {
-        resolve(gltf); // Erfolg: Promise mit dem geladenen GLTF auflösen
+        resolve(gltf);
       }, undefined, (error) => {
-        reject(error); // Fehler: Promise mit dem Fehler ablehnen
+        reject(error);
       });
     });
   }
@@ -96,7 +73,7 @@ export default class Timeline {
 
   async loadSchablone(scale = 1) {
     try {
-      const loadedObj = await this.loadModel(this.schablonePath); // Warte auf das Laden des Modells mit der neuen asynchronen Funktion
+      const loadedObj = await this.loadModel(this.schablonePath);
       this.schablone = loadedObj.scene;
       this.schablone.name = "Schablone";
       this.camera.parent.add(this.schablone);
@@ -306,7 +283,7 @@ async wait(seconds: number) {
     }
   }
 
-  animate() {
+  animate = () => {
     requestAnimationFrame(this.animate.bind(this));
     const elapsedTime = this.clock.getElapsedTime();
     this.update(elapsedTime);
