@@ -5,9 +5,10 @@
 import * as THREE from 'three';
 import { AnimationMixer, Clock, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
+import { importJSON, JSONDataItem } from './DataParser.js';
 
 export default class Timeline {
-    json: String;
+    json: JSONDataItem;
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     gltfLoader: GLTFLoader;
@@ -24,7 +25,7 @@ export default class Timeline {
       ];
     lastTime: number;
 
-    constructor(json: String, scene: Scene, camera: PerspectiveCamera, gltfLoader: GLTFLoader, renderer: WebGLRenderer) {
+    constructor(json: JSONDataItem, scene: Scene, camera: PerspectiveCamera, gltfLoader: GLTFLoader, renderer: WebGLRenderer) {
     this.json = json;
     this.scene = scene;
     this.camera = camera;
@@ -34,8 +35,7 @@ export default class Timeline {
     // Time stuff
     this.mixer; // for animations
     this.clock = new THREE.Clock();
-    this.lastTime = 0;
-
+    this.lastTime = 0
   }
 
 

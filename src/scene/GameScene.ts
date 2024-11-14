@@ -2,6 +2,7 @@
 import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 
 import ARManager from '../ARManager';
+import { importJSON, JSONDataItem } from "../DataParser";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -35,7 +36,6 @@ class GameScene {
         if (!targetElement)
             throw "unable to find target element";
         targetElement.appendChild(this.renderer.domElement);
-
         
         const aspectRatio = this.width / this.height;
         this.camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000);
@@ -50,6 +50,9 @@ class GameScene {
         window.addEventListener("resize", this.resize, false);
 
         this.renderer.setAnimationLoop(this.update);
+
+        // Test load data
+        this.loadExternalData(0);
     }
 
     private resize = () => {
@@ -68,6 +71,27 @@ class GameScene {
 
     public startAR() {
         this.arManager.setupAR();
+    }
+
+    private async loadExternalData(parameterID: number): Promise<JSONDataItem | null> {
+        if (isNaN(parameterID) || parameterID < 0) {
+            console.error(`Invalid parameterID: ${parameterID}`);
+            return null;
+        }
+    
+        try {
+            const json = await importJSON(parameterID);
+            if (json === null) {
+                console.warn(`Not date found for parameterID: ${parameterID}`);
+                return null;
+            }
+    
+            console.log(json.pathModel);
+            return json as JSONDataItem;
+        } catch (error) {
+            console.error("Error why loading external data:", error);
+            return null;
+        }
     }
 }
 
