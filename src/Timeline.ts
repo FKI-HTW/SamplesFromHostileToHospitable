@@ -3,7 +3,7 @@
 // animationSequence.start();
 
 import * as THREE from 'three';
-import { AnimationMixer, Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { AnimationMixer, Clock, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
 
 export default class Timeline {
@@ -12,7 +12,8 @@ export default class Timeline {
     camera: THREE.PerspectiveCamera;
     gltfLoader: GLTFLoader;
     renderer: WebGLRenderer;
-    mainModelPath: String | undefined;
+    mainModelPath: string | undefined;
+    stencilPath!: string;
     // Time stuff
     mixer: AnimationMixer | undefined;
     clock: Clock = new Clock();
@@ -73,7 +74,7 @@ export default class Timeline {
 
   async loadSchablone(scale = 1) {
     try {
-      const loadedObj = await this.loadModel(this.schablonePath);
+      const loadedObj = await this.loadModel(this.stencilPath);
       this.schablone = loadedObj.scene;
       this.schablone.name = "Schablone";
       this.camera.parent.add(this.schablone);
@@ -134,7 +135,7 @@ export default class Timeline {
     this.updateProgressBar(this.loadingBarTime * 1000);
   }
 
-  assignToParent(child, parent, maintainOffset = false) {
+  assignToParent(child: Object3D, parent: Object3D, maintainOffset: boolean = false) {
     if (maintainOffset) {
       // Direkt die Welttransformation auf das Kind anwenden, bevor es zum Parent hinzugefügt wird
       child.position.setFromMatrixPosition(child.matrixWorld);
@@ -142,7 +143,7 @@ export default class Timeline {
       child.scale.setFromMatrixScale(child.matrixWorld);
     }
   
-    // Das Kind zum Parent hinzufügen
+    // Add child to parent
     parent.add(child);
   }
   
