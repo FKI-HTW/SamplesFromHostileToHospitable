@@ -19,6 +19,8 @@ class GameScene {
 
     private arManager: ARManager;
 
+    private loadedJSON: JSONDataItem | null | undefined;
+
     private constructor() {
         this.width = window.innerWidth;
         this.height = window.innerHeight;
@@ -52,7 +54,11 @@ class GameScene {
         this.renderer.setAnimationLoop(this.update);
 
         // Test load data
-        this.loadExternalData(0);
+        this.start();
+    }
+
+    private async start(){
+        this.loadedJSON =  await this.loadExternalData(0);
     }
 
     private resize = () => {
@@ -69,7 +75,7 @@ class GameScene {
 
     }
 
-    public startAR() {
+    public prepareAR() {
         this.arManager.setupAR();
     }
 
