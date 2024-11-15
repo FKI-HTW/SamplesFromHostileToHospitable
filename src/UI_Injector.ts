@@ -184,6 +184,24 @@ export class UI_Injector {
         // Hinzufügen des Containers zum rootElement
         this.rootElement.prepend(buttonContainer);
     }
+
+    public createPlaceButton(text: string, backgroundColor = "#D12BB9") {
+        const svgElement = this.tryGetSVG();
+        if (!svgElement) return null;
+    
+        const startButton = document.createElement('Button');
+        startButton.innerText = text;
+        startButton.id = 'startButton';
+        startButton.style.backgroundColor = backgroundColor;
+        // Mach den Button unsichtbar
+        startButton.style.visibility = 'hidden';
+        if(svgElement.parentNode)
+            svgElement.parentNode.insertBefore(startButton, svgElement);
+        return startButton;
+    }
+    private tryGetSVG() {
+        return document.querySelector('svg');
+    }
     
     
 }
