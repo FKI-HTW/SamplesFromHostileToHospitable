@@ -7,25 +7,32 @@ class ARManager {
     private hitTestSourceRequested = false;
     private renderer: WebGLRenderer;
     private camera: PerspectiveCamera;
-    private contentObject: Object3D;
+    private contentObject: Object3D | null = null;
+    private arButton!: HTMLElement;
 
-    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera, content: any) {
+    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera) {
         this.renderer = renderer;
         this.camera = camera;
-        this.contentObject = content;
     }
 
     public setupAR() {
         // Add AR button to the scene
-        document.body.appendChild(ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] }));
+        this.arButton = ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] });
+        document.body.appendChild(this.arButton);
         this.renderer.xr.addEventListener('sessionstart', () => {
             console.log('AR session started');
             this.requestHitTestSource();
         });
+
+        if(!this.contentObject){
+            this.arButton.style.pointerEvents = "none";
+            this.arButton.style.opacity = "0.5";
+        }
     }
 
     public setContent(content: Object3D){
         this.contentObject = content;
+        this.arButton.style.pointerEvents = "auto";
     }
 
     private requestHitTestSource() {
@@ -43,8 +50,11 @@ class ARManager {
                 this.hitTestSourceRequested = false;
                 this.hitTestSource = null;
                 // Try destroing last object
-                if(this.contentObject != null && this.contentObject.parent)
+                if(this.contentObject != null && this.contentObject.parent){
                     this.contentObject.parent.remove(this.contentObject);
+                    this.arButton.style.pointerEvents = "none";
+                    this.contentObject = null;
+                }
             });
         }
     }
@@ -59,7 +69,7 @@ class ARManager {
                 const hit = hitTestResults[0];
                 const hitPose = hit.getPose(referenceSpace);
 
-                if (hitPose) {
+                if (hitPose && this.contentObject) {
                     const newY = hitPose.transform.position.y;
                     const direction = new Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
                     this.contentObject.position.set(

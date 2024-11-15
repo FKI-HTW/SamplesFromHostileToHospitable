@@ -1,5 +1,5 @@
 
-import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import { BoxGeometry, DirectionalLight, Mesh, MeshBasicMaterial, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
 
 import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
@@ -18,12 +18,15 @@ class GameScene {
     private camera: PerspectiveCamera;
 
     private readonly scene = new Scene();
+    private directionalLight: DirectionalLight = new DirectionalLight(0xffffff, 4);
 
     private arManager: ARManager;
     private timeline: Timeline;
     private ui_singleton = UI_Injector.getInstance();
 
     private loadedJSON: JSONDataItem | null | undefined;
+
+    private mainModel: Object3D | undefined;
 
     private constructor() {
         this.width = window.innerWidth;
@@ -46,10 +49,7 @@ class GameScene {
         const aspectRatio = this.width / this.height;
         this.camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
-        // Debug Cube
-        const cube = new Mesh(new BoxGeometry(), new MeshBasicMaterial()); // Placeholder cube
-        cube.scale.set(0.2, 0.2, 0.2);
-        this.scene.add(cube);
+        this.scene.add(this.directionalLight);
 
         // Debug UI
         this.ui_singleton.createVerticalButtonLayout(
@@ -63,7 +63,7 @@ class GameScene {
         );
         
         this.timeline = new Timeline(this.scene, this.camera, this.renderer);
-        this.arManager = new ARManager(this.renderer, this.camera, cube);
+        this.arManager = new ARManager(this.renderer, this.camera);
 
         window.addEventListener("resize", this.resize, false);
 
@@ -116,20 +116,22 @@ class GameScene {
     private async TestLoadModel(pathModel: string) {
         const gltf = await this.timeline.loadModel(pathModel);
     
-        // Das geladene Modell zur Szene hinzufügen
+        // Remove previous model
+        if(this.mainModel)
+            this.scene.remove(this.mainModel);
+        // Add new model to scene
         const model = gltf.scene;
         this.scene.add(model);
-    
-        // Platzierung vor der Kamera
-        const offset = new Vector3(0, 0, -2); // 2 Einheiten vor der Kamera
-        offset.applyQuaternion(this.camera.quaternion); // Transformiere in Weltkoordinaten
-        const cameraPosition = this.camera.position.clone(); // Kopiere die Kameraposition
-        model.position.copy(cameraPosition).add(offset); // Setze die Modellposition vor der Kamera
-    
-        // Optional: Rotationsausrichtung des Modells anpassen
-        model.quaternion.copy(this.camera.quaternion);
-    
-        console.log("Modell geladen und vor die Kamera gesetzt:", model);
+
+        this.mainModel = model;
+
+        // Transform tests
+        this.mainModel.rotation.y = Math.PI;
+        const scaleFactor: number = 0.2;
+        this.mainModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+        // Assign new model to AR Manager
+        this.arManager.setContent(this.mainModel);
     }
     
 }
