@@ -3,6 +3,7 @@ import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRe
 
 import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
+import { UI_Injector } from "../UI_Injector";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -18,6 +19,7 @@ class GameScene {
     private readonly scene = new Scene();
 
     private arManager: ARManager;
+    private ui_singleton = UI_Injector.getInstance();
 
     private loadedJSON: JSONDataItem | null | undefined;
 
@@ -47,18 +49,31 @@ class GameScene {
         cube.scale.set(0.2, 0.2, 0.2);
         this.scene.add(cube);
 
+        // Debug UI
+        // this.ui_singleton.createButton("btn", "Do Something", () => {
+        //     console.log("Button clicked!");
+        // });
+        //this.ui_singleton.createVerticalLayoutWithOffset();
+        this.ui_singleton.createVerticalButtonLayout(
+            [
+                { id: 'btn', text: 'Content A', onClick: () => this.prepareData(0) },
+                { id: 'btn', text: 'Content B', onClick: () => this.prepareData(1) },
+                { id: 'btn', text: 'Content C', onClick: () => this.prepareData(2) }
+            ],
+            10, // Top-Offset
+            30 // Distance between buttons
+        );
+        
+
         this.arManager = new ARManager(this.renderer, this.camera, cube);
 
         window.addEventListener("resize", this.resize, false);
 
         this.renderer.setAnimationLoop(this.update);
-
-        // Test load data
-        this.start();
     }
 
-    private async start(){
-        this.loadedJSON =  await this.loadExternalData(0);
+    private async prepareData(index: number){
+        this.loadedJSON =  await this.loadExternalData(index);
     }
 
     private resize = () => {

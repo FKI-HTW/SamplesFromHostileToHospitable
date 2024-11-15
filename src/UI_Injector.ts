@@ -1,6 +1,6 @@
 export class UI_Injector {
     private static instance: UI_Injector;
-    private rootElement: HTMLElement | null = document.getElementById('root');
+    private rootElement: HTMLElement | null = document.getElementById('app');
     private buttons: Map<string, HTMLElement> = new Map();
     private lastClickedButton!: HTMLButtonElement;
 
@@ -51,7 +51,7 @@ export class UI_Injector {
         button.style.position = 'absolute';
         button.style.cursor = 'pointer';
         button.addEventListener('click', onClickCallback);
-        this.rootElement!.appendChild(button);
+        this.rootElement!.prepend(button);
         this.buttons.set(id, button);
         return button;
     }
@@ -123,11 +123,10 @@ export class UI_Injector {
         buttonScale.style.left = leftDistance;
     
         // Hinzufügen der Buttons zum rootElement
-        this.rootElement!.appendChild(buttonMove);
-        this.rootElement!.appendChild(buttonRotate);
-        this.rootElement!.appendChild(buttonScale);
-    }
-    
+        this.rootElement!.prepend(buttonMove);
+        this.rootElement!.prepend(buttonRotate);
+        this.rootElement!.prepend(buttonScale);
+    } 
     public createHorizontalLayoutWithOffset() {
         // Erstellen und Hinzufügen der Buttons zum rootElement
         const buttonCar = this.createImageButton('./uploads/images/car.png', () => null, 'horizontal-button');
@@ -150,8 +149,42 @@ export class UI_Injector {
         buttonContainer.appendChild(buttonTable);
 
         // Hinzufügen des Containers zum rootElement
-        this.rootElement!.appendChild(buttonContainer);
+        this.rootElement!.prepend(buttonContainer);
     }
+    public createVerticalButtonLayout(
+        buttonData: { id: string; text: string; onClick: () => void }[],
+        topOffset: number = 200,
+        gap: number = 10
+    ): void {
+        if (!this.rootElement) {
+            console.error("Root element is not defined. Please set the root element before using this method.");
+            return;
+        }
+    
+        // Erstellen eines Containers für die Buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.position = 'absolute';
+        buttonContainer.style.top = `${topOffset}px`; // Startposition
+        buttonContainer.style.left = '50%'; // Zentriert
+        buttonContainer.style.transform = 'translateX(-50%)'; // Zentrierung
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.flexDirection = 'column'; // Vertikale Anordnung
+        buttonContainer.style.alignItems = 'center'; // Horizontal zentrieren
+        buttonContainer.style.zIndex = '10'; // Sicherstellen, dass es über anderen Elementen liegt
+    
+        // Erstellen und Hinzufügen der Buttons mit `marginTop` für den Abstand
+        buttonData.forEach((data, index) => {
+            const button = this.createButton(data.id, data.text, data.onClick);
+            if (index > 0) {
+                button.style.marginTop = `${gap * index}px`; // Abstand nur für alle außer den ersten Button
+            }
+            buttonContainer.appendChild(button);
+        });
+    
+        // Hinzufügen des Containers zum rootElement
+        this.rootElement.prepend(buttonContainer);
+    }
+    
     
 }
 
