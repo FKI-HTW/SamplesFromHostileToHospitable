@@ -1,5 +1,5 @@
 
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from "three";
+import { WebGLRenderer, PerspectiveCamera, Vector3, Object3D } from "three";
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 
 class ARManager {
@@ -7,21 +7,25 @@ class ARManager {
     private hitTestSourceRequested = false;
     private renderer: WebGLRenderer;
     private camera: PerspectiveCamera;
-    private cube: any;  // Assuming cube is passed for AR interaction
+    private contentObject: Object3D;
 
-    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera, cube: any) {
+    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera, content: any) {
         this.renderer = renderer;
         this.camera = camera;
-        this.cube = cube;
+        this.contentObject = content;
     }
 
     public setupAR() {
         // Add AR button to the scene
         document.body.appendChild(ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] }));
         this.renderer.xr.addEventListener('sessionstart', () => {
-        console.log('AR session started');
-        this.requestHitTestSource();
+            console.log('AR session started');
+            this.requestHitTestSource();
         });
+    }
+
+    public setContent(content: Object3D){
+        this.contentObject = content;
     }
 
     private requestHitTestSource() {
@@ -38,6 +42,9 @@ class ARManager {
             session.addEventListener('end', () => {
                 this.hitTestSourceRequested = false;
                 this.hitTestSource = null;
+                // Try destroing last object
+                if(this.contentObject != null && this.contentObject.parent)
+                    this.contentObject.parent.remove(this.contentObject);
             });
         }
     }
@@ -55,12 +62,12 @@ class ARManager {
                 if (hitPose) {
                     const newY = hitPose.transform.position.y;
                     const direction = new Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
-                    this.cube.position.set(
+                    this.contentObject.position.set(
                         hitPose.transform.position.x,
                         newY,
                         hitPose.transform.position.z
                     );
-                    this.cube.visible = true;
+                    this.contentObject.visible = true;
                 }
             }
         }

@@ -2,7 +2,7 @@
     {
         "ID": 0,
         "contentName": "Spot 0",
-        "pathModel": "assets/models/example0.glb",
+        "pathModel": "assets/models/ladybug.glb",
         "pathStencil": "assets/models/example0.glb",
         "pathAudioFiles": [
             "assets/audios/test1.mp3", 
@@ -11,7 +11,7 @@
     {
         "ID": 1,
         "contentName": "Spot 1",
-        "pathModel": "assets/models/example1.glb",
+        "pathModel": "assets/models/pinguin.glb",
         "pathStencil": "assets/models/example1.glb",
         "pathAudioFiles": [
             "assets/audios/test3.mp3", 
@@ -20,7 +20,7 @@
     {
         "ID": 2,
         "contentName": "Spot 2",
-        "pathModel": "assets/models/example2.glb",
+        "pathModel": "assets/models/turtle.glb",
         "pathStencil": "assets/models/example2.glb",
         "pathAudioFiles": [
             "assets/audios/test5.mp3", 

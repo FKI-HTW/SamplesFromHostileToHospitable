@@ -1,9 +1,10 @@
 
-import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { BoxGeometry, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
 
 import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
 import { UI_Injector } from "../UI_Injector";
+import Timeline from "../Timeline";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -19,6 +20,7 @@ class GameScene {
     private readonly scene = new Scene();
 
     private arManager: ARManager;
+    private timeline: Timeline;
     private ui_singleton = UI_Injector.getInstance();
 
     private loadedJSON: JSONDataItem | null | undefined;
@@ -50,21 +52,17 @@ class GameScene {
         this.scene.add(cube);
 
         // Debug UI
-        // this.ui_singleton.createButton("btn", "Do Something", () => {
-        //     console.log("Button clicked!");
-        // });
-        //this.ui_singleton.createVerticalLayoutWithOffset();
         this.ui_singleton.createVerticalButtonLayout(
             [
                 { id: 'btn', text: 'Content A', onClick: () => this.prepareData(0) },
                 { id: 'btn', text: 'Content B', onClick: () => this.prepareData(1) },
                 { id: 'btn', text: 'Content C', onClick: () => this.prepareData(2) }
             ],
-            10, // Top-Offset
-            30 // Distance between buttons
+            40, // Top-Offset
+            60 // Distance between buttons
         );
         
-
+        this.timeline = new Timeline(this.scene, this.camera, this.renderer);
         this.arManager = new ARManager(this.renderer, this.camera, cube);
 
         window.addEventListener("resize", this.resize, false);
@@ -87,7 +85,6 @@ class GameScene {
     private update = (_timestamp: number, frame: XRFrame) => {
         this.arManager.trackHitSource(frame);
         this.renderer.render(this.scene, this.camera);
-
     }
 
     public prepareAR() {
@@ -108,12 +105,33 @@ class GameScene {
             }
     
             console.log(json.pathModel);
+            this.TestLoadModel(json.pathModel);
             return json as JSONDataItem;
         } catch (error) {
             console.error("Error why loading external data:", error);
             return null;
         }
     }
+
+    private async TestLoadModel(pathModel: string) {
+        const gltf = await this.timeline.loadModel(pathModel);
+    
+        // Das geladene Modell zur Szene hinzufügen
+        const model = gltf.scene;
+        this.scene.add(model);
+    
+        // Platzierung vor der Kamera
+        const offset = new Vector3(0, 0, -2); // 2 Einheiten vor der Kamera
+        offset.applyQuaternion(this.camera.quaternion); // Transformiere in Weltkoordinaten
+        const cameraPosition = this.camera.position.clone(); // Kopiere die Kameraposition
+        model.position.copy(cameraPosition).add(offset); // Setze die Modellposition vor der Kamera
+    
+        // Optional: Rotationsausrichtung des Modells anpassen
+        model.quaternion.copy(this.camera.quaternion);
+    
+        console.log("Modell geladen und vor die Kamera gesetzt:", model);
+    }
+    
 }
 
 export default GameScene;
