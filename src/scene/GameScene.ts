@@ -29,7 +29,7 @@ class GameScene {
 
     private mainModel: Object3D | undefined;
 
-    private eventManager : EventManager = new EventManager();
+    private eventManager: EventManager = new EventManager();
 
     private constructor() {
         this.width = window.innerWidth;
@@ -48,7 +48,7 @@ class GameScene {
         if (!targetElement)
             throw "unable to find target element";
         targetElement.appendChild(this.renderer.domElement);
-        
+
         const aspectRatio = this.width / this.height;
         this.camera = new PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 
@@ -64,19 +64,19 @@ class GameScene {
             40, // Top-Offset
             60 // Distance between buttons
         );
-        
+
         this.timeline = new Timeline(this.scene, this.camera, this.renderer);
         this.arManager = new ARManager(this.renderer, this.camera, this.eventManager);
 
         window.addEventListener("resize", this.resize, false);
 
-        this.eventManager.subscribe("placeObject", () => this.timeline.start());
+        this.eventManager.subscribe("placeObject", () => this.startTimeline());
 
         this.renderer.setAnimationLoop(this.update);
     }
 
-    private async prepareData(index: number){
-        this.loadedJSON =  await this.loadExternalData(index);
+    private async prepareData(index: number) {
+        this.loadedJSON = await this.loadExternalData(index);
     }
 
     private resize = () => {
@@ -101,14 +101,14 @@ class GameScene {
             console.error(`Invalid parameterID: ${parameterID}`);
             return null;
         }
-    
+
         try {
             const json = await importJSON(parameterID);
             if (json === null) {
                 console.warn(`Not date found for parameterID: ${parameterID}`);
                 return null;
             }
-    
+
             console.log(json.pathModel);
             // TODO improve
             this.TestLoadModel(json.pathModel);
@@ -121,9 +121,9 @@ class GameScene {
 
     private async TestLoadModel(pathModel: string) {
         const gltf = await this.timeline.loadModel(pathModel);
-    
+
         // Remove previous model
-        if(this.mainModel)
+        if (this.mainModel)
             this.scene.remove(this.mainModel);
         // Add new model to scene
         const model = gltf.scene;
@@ -139,7 +139,14 @@ class GameScene {
         // Assign new model to AR Manager
         this.arManager.setContent(this.mainModel);
     }
-    
+
+    private startTimeline() {
+        if (this.loadedJSON) {
+            this.timeline.start(this.loadedJSON);
+
+        }
+    }
+
 }
 
 export default GameScene;

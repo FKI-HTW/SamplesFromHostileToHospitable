@@ -5,26 +5,28 @@
 import * as THREE from 'three';
 import { AnimationMixer, Clock, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/Addons.js';
-
+import { JSONDataItem } from './DataParser';
 
 export default class Timeline {
-    scene: THREE.Scene;
-    camera: THREE.PerspectiveCamera;
-    gltfLoader: GLTFLoader = new GLTFLoader();
-    renderer: WebGLRenderer;
-    mainModelPath: string | undefined;
-    stencilPath!: string;
-    // Time stuff
-    mixer: AnimationMixer | undefined;
-    clock: Clock = new Clock();
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  gltfLoader: GLTFLoader = new GLTFLoader();
+  renderer: WebGLRenderer;
+  mainModelPath: string | undefined;
+  stencilPath!: string;
+  // Time stuff
+  mixer: AnimationMixer | undefined;
+  clock: Clock = new Clock();
 
-    // Timeline
-    events = [
-        { time: 1, action: () => {console.log("this bla bla")} }
-      ];
-    lastTime: number;
+  loadedJSON: JSONDataItem | null | undefined;
 
-    constructor(scene: Scene, camera: PerspectiveCamera, renderer: WebGLRenderer) {
+  // Timeline
+  events = [
+    { time: 1, action: () => { console.log(`Hi ${this.loadedJSON?.pathModel}`) } }
+  ];
+  lastTime: number;
+
+  constructor(scene: Scene, camera: PerspectiveCamera, renderer: WebGLRenderer) {
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
@@ -36,38 +38,34 @@ export default class Timeline {
   }
 
 
-  
-// When the user lands in the AR screen, called in main script
-public whenSessionStart(){
-  this.onShowPlaceButton();
-}
-private onShowPlaceButton = () => {
-  // TODO show place button
-}
+
+  // When the user lands in the AR screen, called in main script
+  public whenSessionStart() {
+    this.onShowPlaceButton();
+  }
+  private onShowPlaceButton = () => {
+    // TODO show place button
+  }
 
 
-loadModel(modelPath: string): Promise<GLTF> {
-  return new Promise((resolve, reject) => {
+  loadModel(modelPath: string): Promise<GLTF> {
+    return new Promise((resolve, reject) => {
       this.gltfLoader.load(
-          modelPath,
-          (gltf: GLTF) => {
-              resolve(gltf);
-          },
-          undefined,
-          (error: unknown) => {
-              reject(error);
-          }
+        modelPath,
+        (gltf: GLTF) => {
+          resolve(gltf);
+        },
+        undefined,
+        (error: unknown) => {
+          reject(error);
+        }
       );
-  });
-}
+    });
+  }
 
+  eventAfterLoad() {
 
-
-
-
-eventAfterLoad(){
-
-}
+  }
 
   assignToParent(child: Object3D, parent: Object3D, maintainOffset: boolean = false) {
     if (maintainOffset) {
@@ -76,19 +74,19 @@ eventAfterLoad(){
       child.rotation.setFromRotationMatrix(child.matrixWorld);
       child.scale.setFromMatrixScale(child.matrixWorld);
     }
-  
+
     // Add child to parent
     parent.add(child);
   }
-  
+
 
   playAnimation(loop = true, animObj: Object3D, animIndex = -1) {
     if (animObj && animObj.animations && animObj.animations.length > 0) {
       const animations = animObj.animations;
       this.mixer = new THREE.AnimationMixer(this.scene);
       const animationClips = animations.map((clip) => THREE.AnimationClip.findByName(animations, clip.name));
-      
-      if(animIndex != -1){
+
+      if (animIndex != -1) {
         startAnim(animationClips[animIndex], this.mixer);
         return;
       }
@@ -97,8 +95,8 @@ eventAfterLoad(){
         startAnim(clip, this.mixer);
       });
 
-      function startAnim(clip: THREE.AnimationClip, mixer: THREE.AnimationMixer | undefined){
-        if(!mixer) return;
+      function startAnim(clip: THREE.AnimationClip, mixer: THREE.AnimationMixer | undefined) {
+        if (!mixer) return;
         const action = mixer.clipAction(clip);
         action.loop = loop ? THREE.LoopRepeat : THREE.LoopOnce;
         action.clampWhenFinished = true;
@@ -117,56 +115,56 @@ eventAfterLoad(){
       console.error('Error preparing audio:', error);
       return;
     }
-    
+
     return audio;
   }
 
-  
- prepareAudio(audioPath: string) {
-  const audioLoader = new THREE.AudioLoader();
-  return new Promise((resolve, reject) => {
+
+  prepareAudio(audioPath: string) {
+    const audioLoader = new THREE.AudioLoader();
+    return new Promise((resolve, reject) => {
       const hasAudioExtension = /\.(mp3|wav|m4a)$/.test(audioPath);
       if (hasAudioExtension) {
-          audioLoader.load(audioPath, function (buffer) {
-              const listener = new THREE.AudioListener();
-              const readyAudio = new THREE.Audio(listener);
-              readyAudio.setBuffer(buffer);
-              readyAudio.isPlaying = false;
-              resolve(readyAudio);
-          }, undefined, function (err) {
-              reject(err);
-          });
+        audioLoader.load(audioPath, function (buffer) {
+          const listener = new THREE.AudioListener();
+          const readyAudio = new THREE.Audio(listener);
+          readyAudio.setBuffer(buffer);
+          readyAudio.isPlaying = false;
+          resolve(readyAudio);
+        }, undefined, function (err) {
+          reject(err);
+        });
       } else {
-          reject(new Error('Invalid audio file extension'));
+        reject(new Error('Invalid audio file extension'));
       }
-  });
-}
+    });
+  }
 
   // Paramater needs a .scene object
-  makeModelTransparent(model: any, transparency = 0.5){
+  makeModelTransparent(model: any, transparency = 0.5) {
     model.traverse((node: any) => {
-        if (node.isMesh) {
-          // Check if the node is a mesh
-          const materials = Array.isArray(node.material) ? node.material : [node.material];
-      
-          // Iterate through the materials of the mesh and make them half transparent
-          for (const material of materials) {
-            if (material.transparent !== undefined) {
-              material.transparent = true;
-              material.opacity = transparency;
-            }
+      if (node.isMesh) {
+        // Check if the node is a mesh
+        const materials = Array.isArray(node.material) ? node.material : [node.material];
+
+        // Iterate through the materials of the mesh and make them half transparent
+        for (const material of materials) {
+          if (material.transparent !== undefined) {
+            material.transparent = true;
+            material.opacity = transparency;
           }
         }
-      });
-}
+      }
+    });
+  }
 
-async wait(seconds: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, seconds * 1000); // Multiply by 1000 to convert seconds to milliseconds
-  });
-}
+  async wait(seconds: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, seconds * 1000); // Multiply by 1000 to convert seconds to milliseconds
+    });
+  }
 
-//-------------------------------------------------------------
+  //-------------------------------------------------------------
   loadMap() {
     // Implementation
     window.location.href = 'index.html';
@@ -181,10 +179,10 @@ async wait(seconds: number) {
     this.lastTime = time;
 
     // Continous stuff
-    if(this.mixer){
+    if (this.mixer) {
       // TODO make this smarter again
       // this.mixer.update(this.clock.getDelta()); 
-      this.mixer.update(1/60); 
+      this.mixer.update(1 / 60);
     }
   }
   animate = () => {
@@ -193,8 +191,10 @@ async wait(seconds: number) {
     this.update(elapsedTime);
     this.renderer.render(this.scene, this.camera);
   }
-  start() {
+  start(json: JSONDataItem) {
     this.animate();
+    if (json)
+      this.loadedJSON = json;
   }
 
 }
