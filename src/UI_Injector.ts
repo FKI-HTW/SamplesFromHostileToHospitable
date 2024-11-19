@@ -4,7 +4,10 @@ export class UI_Injector {
     private buttons: Map<string, HTMLElement> = new Map();
     private lastClickedButton!: HTMLButtonElement;
 
+    private allCreatedElements: HTMLElement[] = []; // Eine Liste (Array) vom Typ HTMLElement
 
+    private startButton : HTMLElement | undefined;
+   
     private constructor() {}
 
     public static getInstance(): UI_Injector {
@@ -53,6 +56,7 @@ export class UI_Injector {
         button.addEventListener('click', onClickCallback);
         this.rootElement!.prepend(button);
         this.buttons.set(id, button);
+        this.allCreatedElements.push(button);
         return button;
     }
 
@@ -100,7 +104,7 @@ export class UI_Injector {
             // Speichere diesen Button als den zuletzt geklickten
             this.lastClickedButton = button;
         });
-        
+        this.allCreatedElements.push(button);
         return button;
     }
     public createVerticalLayoutWithOffset() {
@@ -182,6 +186,7 @@ export class UI_Injector {
         });
     
         // Hinzufügen des Containers zum rootElement
+        this.allCreatedElements.push(buttonContainer);
         this.rootElement.prepend(buttonContainer);
     }
 
@@ -194,15 +199,28 @@ export class UI_Injector {
         startButton.id = 'startButton';
         startButton.style.backgroundColor = backgroundColor;
         // Mach den Button unsichtbar
-        startButton.style.visibility = 'hidden';
+        // startButton.style.visibility = 'hidden';
         if(svgElement.parentNode)
             svgElement.parentNode.insertBefore(startButton, svgElement);
+        this.allCreatedElements.push(startButton);
+        this.startButton = startButton;
         return startButton;
     }
     private tryGetSVG() {
         return document.querySelector('svg');
     }
     
+    public deleteCreatedElements(){
+        this.allCreatedElements.forEach((element) => {
+            element.remove();
+        });
+    }
+
+    public removeStartButton(){
+        if(!this.startButton) return;
+        this.startButton.remove();
+        this.startButton = undefined;
+    }
     
 }
 

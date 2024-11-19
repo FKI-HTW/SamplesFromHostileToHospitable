@@ -48,3 +48,26 @@ body{
 .horizontal-button {
     position: relative; 
 }
+
+#startButton {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #D12BB9;
+  color: #fff;
+  padding: 10px;
+  width: 200px;
+  font-size: 1em;
+  border-radius: 5%;
+  border: 0px;
+  font-family: 'Palanquin Dark', sans-serif;
+  font-weight: 700;
+  transform-origin: center; /* Skalierung bleibt zentriert */
+}
+
+#startButton:active {
+  transform: translateX(-50%) scale(0.95); /* Position bleibt gleich */
+  background-color: #b020a1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

@@ -1,6 +1,7 @@
 
 import { WebGLRenderer, PerspectiveCamera, Vector3, Object3D } from "three";
 import { ARButton } from 'three/addons/webxr/ARButton.js';
+import { UI_Injector } from "./UI_Injector";
 
 class ARManager {
     private hitTestSource: XRHitTestSource | null = null;
@@ -19,11 +20,20 @@ class ARManager {
         // Add AR button to the scene
         this.arButton = ARButton.createButton(this.renderer, { requiredFeatures: ['hit-test'] });
         document.body.appendChild(this.arButton);
+        // AR Session has started
         this.renderer.xr.addEventListener('sessionstart', () => {
             console.log('AR session started');
             this.requestHitTestSource();
-        });
+            // Delte all previous html elements
+            UI_Injector.getInstance().removeStartButton();
+            // UI_Injector.getInstance().deleteCreatedElements();
+            // Create place button when AR session has started
+            const placeButton : HTMLElement | null  = UI_Injector.getInstance().createPlaceButton("Place Content");
+            if(placeButton)
+                placeButton.onclick = this.placeObject.bind(this);
 
+        });
+        // When there is no content yet, make AR Button not interactable
         if(!this.contentObject){
             this.arButton.style.pointerEvents = "none";
             this.arButton.style.opacity = "0.5";
@@ -33,6 +43,14 @@ class ARManager {
     public setContent(content: Object3D){
         this.contentObject = content;
         this.arButton.style.pointerEvents = "auto";
+    }
+
+    private placeObject(){
+        console.log("button place");
+        this.hitTestSource = null;
+        UI_Injector.getInstance().removeStartButton();
+
+        // TODO Timeline
     }
 
     private requestHitTestSource() {
@@ -46,6 +64,7 @@ class ARManager {
 
             this.hitTestSourceRequested = true;
 
+            // When AR Session is closed
             session.addEventListener('end', () => {
                 this.hitTestSourceRequested = false;
                 this.hitTestSource = null;
@@ -59,6 +78,7 @@ class ARManager {
         }
     }
 
+    // TODO stop tracking by condition
     public trackHitSource(frame: XRFrame) {
         const referenceSpace = this.renderer.xr.getReferenceSpace();
         // console.log(referenceSpace);

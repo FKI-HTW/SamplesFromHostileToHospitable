@@ -105,6 +105,7 @@ class GameScene {
             }
     
             console.log(json.pathModel);
+            // TODO improve
             this.TestLoadModel(json.pathModel);
             return json as JSONDataItem;
         } catch (error) {
