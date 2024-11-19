@@ -141,10 +141,13 @@ class GameScene {
     }
 
     private startTimeline() {
-        if (this.loadedJSON) {
-            this.timeline.start(this.loadedJSON);
+        if (!this.loadedJSON) return;
 
-        }
+        this.timeline.start(this.loadedJSON);
+        this.timeline.setEvents(this.loadedJSON.pathAudioFiles.map(audioFile => ({
+            time: audioFile.time,
+            action: () => console.log(`Playing audio: ${audioFile.path}`)
+        })));
     }
 
 }

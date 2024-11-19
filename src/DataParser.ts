@@ -6,7 +6,12 @@ export interface JSONDataItem {
     contentName: string;
     pathModel: string;
     pathStencil: string;
-    pathAudioFiles: string[];
+    pathAudioFiles: AudioFile[];
+}
+
+interface AudioFile {
+    path: string;
+    time: number;
 }
 
 

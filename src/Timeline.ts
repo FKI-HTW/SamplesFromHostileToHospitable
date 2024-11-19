@@ -1,6 +1,6 @@
 // Usage
-// const animationSequence = new AnimationSequence();
-// animationSequence.start();
+// const timeline = new Timeline();
+// timeline.start();
 
 import * as THREE from 'three';
 import { AnimationMixer, Clock, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
@@ -37,6 +37,9 @@ export default class Timeline {
     this.lastTime = 0
   }
 
+  public setEvents(events: { time: number; action: () => void }[]): void {
+    this.events = events;
+  }
 
 
   // When the user lands in the AR screen, called in main script
