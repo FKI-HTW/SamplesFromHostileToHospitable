@@ -5,6 +5,7 @@ import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
 import { UI_Injector } from "../UI_Injector";
 import Timeline from "../Timeline";
+import EventManager from "../EventManager";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -27,6 +28,8 @@ class GameScene {
     private loadedJSON: JSONDataItem | null | undefined;
 
     private mainModel: Object3D | undefined;
+
+    private eventManager : EventManager = new EventManager();
 
     private constructor() {
         this.width = window.innerWidth;
@@ -63,9 +66,11 @@ class GameScene {
         );
         
         this.timeline = new Timeline(this.scene, this.camera, this.renderer);
-        this.arManager = new ARManager(this.renderer, this.camera);
+        this.arManager = new ARManager(this.renderer, this.camera, this.eventManager);
 
         window.addEventListener("resize", this.resize, false);
+
+        this.eventManager.subscribe("placeObject", () => this.timeline.start());
 
         this.renderer.setAnimationLoop(this.update);
     }

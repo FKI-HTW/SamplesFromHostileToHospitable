@@ -20,7 +20,7 @@ export default class Timeline {
 
     // Timeline
     events = [
-        { time: 1, action: () => {} }
+        { time: 1, action: () => {console.log("this bla bla")} }
       ];
     lastTime: number;
 

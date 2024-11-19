@@ -2,6 +2,7 @@
 import { WebGLRenderer, PerspectiveCamera, Vector3, Object3D } from "three";
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { UI_Injector } from "./UI_Injector";
+import EventManager from "./EventManager";
 
 class ARManager {
     private hitTestSource: XRHitTestSource | null = null;
@@ -11,9 +12,13 @@ class ARManager {
     private contentObject: Object3D | null = null;
     private arButton!: HTMLElement;
 
-    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera) {
+    private eventManager: EventManager = new EventManager;
+
+    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera, eventManager: EventManager) {
         this.renderer = renderer;
         this.camera = camera;
+
+        this.eventManager = eventManager;
     }
 
     public setupAR() {
@@ -51,6 +56,7 @@ class ARManager {
         UI_Injector.getInstance().removeStartButton();
 
         // TODO Timeline
+        this.eventManager.emit("placeObject");
     }
 
     private requestHitTestSource() {
