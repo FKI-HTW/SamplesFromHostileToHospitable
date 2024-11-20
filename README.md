@@ -53,7 +53,7 @@ To add your custom content you can modify the following files:
     The time corresponds to the start time to play the audio in the timeline
 ### GameScene.ts
 To add and label a new button, adapt the following syntax. The :number argument in .prepareData relates to the content's position in database.json
-![Screenshot of the app](public\assets\readme\newContentButton.png)
+![Image add new button](./public/assets/readme/newContentButton.png)
 
 ## Contributing
 Contributions are welcome! Follow these steps:
