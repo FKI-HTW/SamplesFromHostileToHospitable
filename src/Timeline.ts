@@ -20,6 +20,9 @@ export default class Timeline {
 
   loadedJSON: JSONDataItem | null | undefined;
 
+  loadedAudios: THREE.Audio[] = [];
+
+
   // Timeline
   events = [
     { time: 1, action: () => { console.log(`Hi ${this.loadedJSON?.pathModel}`) } }
@@ -42,6 +45,7 @@ export default class Timeline {
   }
 
 
+
   // When the user lands in the AR screen, called in main script
   public whenSessionStart() {
     this.onShowPlaceButton();
@@ -49,6 +53,27 @@ export default class Timeline {
   private onShowPlaceButton = () => {
     // TODO show place button
   }
+  eventAfterLoad() {
+
+  }
+
+  public async prepareMedia(json: JSONDataItem): Promise<void> {
+    if (json) this.loadedJSON = json;
+
+    if (this.loadedJSON?.pathAudioFiles) {
+        for (const audioFile of this.loadedJSON.pathAudioFiles) {
+            console.log(`Path: ${audioFile.path}, Time: ${audioFile.time}`);
+            try {
+                const audio = await this.loadAudio(audioFile.path);
+                if(audio)
+                  this.loadedAudios.push(audio);
+            } catch (error) {
+                console.error(`Fehler beim Laden von ${audioFile.path}`, error);
+            }
+        }
+    }
+}
+
 
 
   loadModel(modelPath: string): Promise<GLTF> {
@@ -66,10 +91,6 @@ export default class Timeline {
     });
   }
 
-  eventAfterLoad() {
-
-  }
-
   assignToParent(child: Object3D, parent: Object3D, maintainOffset: boolean = false) {
     if (maintainOffset) {
       // Direkt die Welttransformation auf das Kind anwenden, bevor es zum Parent hinzugefügt wird
@@ -81,7 +102,6 @@ export default class Timeline {
     // Add child to parent
     parent.add(child);
   }
-
 
   playAnimation(loop = true, animObj: Object3D, animIndex = -1) {
     if (animObj && animObj.animations && animObj.animations.length > 0) {
@@ -110,38 +130,40 @@ export default class Timeline {
     }
   }
 
-  async loadAudio(path: any) {
-    let audio = null;
+  async loadAudio(path: string): Promise<THREE.Audio | null> {
+    let audio: THREE.Audio | null = null; // Typ explizit angeben
     try {
-      audio = await this.prepareAudio(path);
+        audio = await this.prepareAudio(path);
     } catch (error) {
-      console.error('Error preparing audio:', error);
-      return;
+        console.error('Error preparing audio:', error);
+        return null; // Rückgabe von null bei Fehler
     }
 
     return audio;
-  }
+}
 
 
-  prepareAudio(audioPath: string) {
-    const audioLoader = new THREE.AudioLoader();
-    return new Promise((resolve, reject) => {
+
+prepareAudio(audioPath: string): Promise<THREE.Audio> {
+  const audioLoader = new THREE.AudioLoader();
+  return new Promise((resolve, reject) => {
       const hasAudioExtension = /\.(mp3|wav|m4a)$/.test(audioPath);
       if (hasAudioExtension) {
-        audioLoader.load(audioPath, function (buffer) {
-          const listener = new THREE.AudioListener();
-          const readyAudio = new THREE.Audio(listener);
-          readyAudio.setBuffer(buffer);
-          readyAudio.isPlaying = false;
-          resolve(readyAudio);
-        }, undefined, function (err) {
-          reject(err);
-        });
+          audioLoader.load(audioPath, (buffer) => {
+              const listener = new THREE.AudioListener();
+              const readyAudio = new THREE.Audio(listener);
+              readyAudio.setBuffer(buffer);
+              readyAudio.isPlaying = false;
+              resolve(readyAudio); // Gibt ein THREE.Audio-Objekt zurück
+          }, undefined, (err) => {
+              reject(err);
+          });
       } else {
-        reject(new Error('Invalid audio file extension'));
+          reject(new Error('Invalid audio file extension'));
       }
-    });
-  }
+  });
+}
+
 
   // Paramater needs a .scene object
   makeModelTransparent(model: any, transparency = 0.5) {
@@ -194,10 +216,8 @@ export default class Timeline {
     this.update(elapsedTime);
     this.renderer.render(this.scene, this.camera);
   }
-  start(json: JSONDataItem) {
+  start() {
     this.animate();
-    if (json)
-      this.loadedJSON = json;
   }
 
 }

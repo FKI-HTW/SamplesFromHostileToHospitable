@@ -140,10 +140,10 @@ class GameScene {
         this.arManager.setContent(this.mainModel);
     }
 
-    private startTimeline() {
+    private async startTimeline() {
         if (!this.loadedJSON) return;
-
-        this.timeline.start(this.loadedJSON);
+        await this.timeline.prepareMedia(this.loadedJSON);
+        this.timeline.start();
         this.timeline.setEvents(this.loadedJSON.pathAudioFiles.map(audioFile => ({
             time: audioFile.time,
             action: () => console.log(`Playing audio: ${audioFile.path}`)
