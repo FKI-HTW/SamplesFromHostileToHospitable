@@ -1,5 +1,5 @@
 
-import { WebGLRenderer, PerspectiveCamera, Vector3, Object3D } from "three";
+import { WebGLRenderer, Object3D } from "three";
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { UI_Injector } from "./UI_Injector";
 import EventManager from "./EventManager";
@@ -8,16 +8,13 @@ class ARManager {
     private hitTestSource: XRHitTestSource | null = null;
     private hitTestSourceRequested = false;
     private renderer: WebGLRenderer;
-    private camera: PerspectiveCamera;
     private contentObject: Object3D | null = null;
     private arButton!: HTMLElement;
 
     private eventManager: EventManager = new EventManager;
 
-    constructor(renderer: WebGLRenderer, camera: PerspectiveCamera, eventManager: EventManager) {
+    constructor(renderer: WebGLRenderer, eventManager: EventManager) {
         this.renderer = renderer;
-        this.camera = camera;
-
         this.eventManager = eventManager;
     }
 
@@ -97,7 +94,6 @@ class ARManager {
 
                 if (hitPose && this.contentObject) {
                     const newY = hitPose.transform.position.y;
-                    const direction = new Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
                     this.contentObject.position.set(
                         hitPose.transform.position.x,
                         newY,

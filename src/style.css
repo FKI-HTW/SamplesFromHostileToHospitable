@@ -33,6 +33,9 @@ body{
   width: 100px;
   height: 30px;
 }
+#btn:active {
+  background-color: #b020a1;
+}
 
 .imageButton {
   width: 50px;

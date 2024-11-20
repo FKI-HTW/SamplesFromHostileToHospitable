@@ -1,5 +1,5 @@
 
-import { BoxGeometry, DirectionalLight, Mesh, MeshBasicMaterial, Object3D, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import {DirectionalLight, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 
 import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
@@ -66,7 +66,7 @@ class GameScene {
         );
 
         this.timeline = new Timeline(this.scene, this.camera, this.renderer);
-        this.arManager = new ARManager(this.renderer, this.camera, this.eventManager);
+        this.arManager = new ARManager(this.renderer, this.eventManager);
 
         window.addEventListener("resize", this.resize, false);
 
@@ -131,6 +131,7 @@ class GameScene {
         this.scene.add(model);
 
         this.mainModel = model;
+        this.mainModel.visible = false;
 
         // Transform tests
         this.mainModel.rotation.y = Math.PI;
@@ -143,6 +144,8 @@ class GameScene {
 
     private async startTimeline() {
         if (!this.loadedJSON) return;
+        if (this.mainModel)
+            this.mainModel.visible = true;
         this.timeline.resetTimeline();
         await this.timeline.prepareMedia(this.loadedJSON);
         this.timeline.start();
