@@ -1,5 +1,5 @@
 
-import {DirectionalLight, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { DirectionalLight, Object3D, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 
 import ARManager from '../ARManager';
 import { importJSON, JSONDataItem } from "../DataParser";
@@ -62,7 +62,7 @@ class GameScene {
                 { id: 'btn', text: 'Content C', onClick: () => this.prepareData(2) }
             ],
             40, // Top-Offset
-            60 // Distance between buttons
+            60 // Vertical distance between buttons
         );
 
         this.timeline = new Timeline(this.scene, this.camera, this.renderer);

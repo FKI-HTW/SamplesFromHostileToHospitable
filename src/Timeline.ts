@@ -97,7 +97,7 @@ export default class Timeline {
             )
           }
         } catch (error) {
-          console.error(`Fehler beim Laden von ${audioFile.path}`, error);
+          console.error(`Error while loading ${audioFile.path}`, error);
         }
       }
     }

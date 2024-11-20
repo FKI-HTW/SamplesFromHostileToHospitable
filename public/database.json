@@ -3,48 +3,45 @@
         "ID": 0,
         "contentName": "Spot 0",
         "pathModel": "assets/models/ladybug.glb",
-        "pathStencil": "assets/models/example0.glb",
         "pathAudioFiles": [
-        {
-            "path": "assets/audios/test1.mp3",
-            "time": 2
-        },
-        {
-            "path": "assets/audios/test2.mp3",
-            "time": 8
-        }
-    ]
+            {
+                "path": "assets/audios/test1.mp3",
+                "time": 2
+            },
+            {
+                "path": "assets/audios/test2.mp3",
+                "time": 8
+            }
+        ]
     },
     {
         "ID": 1,
         "contentName": "Spot 1",
         "pathModel": "assets/models/pinguin.glb",
-        "pathStencil": "assets/models/example1.glb",
         "pathAudioFiles": [
-        {
-            "path": "assets/audios/test3.mp3",
-            "time": 2
-        },
-        {
-            "path": "assets/audios/test4.mp3",
-            "time": 10
-        }
-    ]
+            {
+                "path": "assets/audios/test3.mp3",
+                "time": 2
+            },
+            {
+                "path": "assets/audios/test4.mp3",
+                "time": 10
+            }
+        ]
     },
     {
         "ID": 2,
         "contentName": "Spot 2",
         "pathModel": "assets/models/turtle.glb",
-        "pathStencil": "assets/models/example2.glb",
         "pathAudioFiles": [
-        {
-            "path": "assets/audios/test1.mp3",
-            "time": 2
-        },
-        {
-            "path": "assets/audios/test2.mp3",
-            "time": 5
-        }
-    ]
+            {
+                "path": "assets/audios/test1.mp3",
+                "time": 2
+            },
+            {
+                "path": "assets/audios/test2.mp3",
+                "time": 5
+            }
+        ]
     }
 ]
