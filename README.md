@@ -1,12 +1,12 @@
 # SamplesFromHostileToHospitable
-
-Generalized Web Augmented Realtiy features from the app From Hostile To Hospitable
+Generalized Web Augmented Reality (WebAR) features from the app From Hostile To Hospitable
 
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
 - [Features](#features)
 - [Customize](#customize)
+- [Publish](#publish)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -19,13 +19,13 @@ Generalized Web Augmented Realtiy features from the app From Hostile To Hospitab
     npm install
 3. Start the development server:
     ```bash
-    npm run dv
+    npm run dev
 4. Build for production:
     ```bash
     npm run build
 ## Usage
-After starting the app, navigate to `http://localhost:3000` in your browser. 
-Use the Chrome Browser. To Debug with Android Smartphone go to chrome://inspect/#devices
+After starting the app, navigate to `http://localhost:5173/` in your browser. <br>
+Use the Chrome Browser. To Debug with Android Smartphone go to `chrome://inspect/#devices`
 ## Features
 - Define 3D models and audios in json database
 - Select desired content in start screen
@@ -54,7 +54,10 @@ To add your custom content you can modify the following files:
 ### GameScene.ts
 To add and label a new button, adapt the following syntax. The :number argument in .prepareData relates to the content's position in database.json
 ![Image add new button](./public/assets/readme/newContentButton.png)
-
+## Publish
+After making a build you get a /dist folder
+Upload it to any server that supports HTTPS. <br>
+[Netlify](https://app.netlify.com/) is for free.
 ## Contributing
 Contributions are welcome! Follow these steps:
 1. Fork the project.
