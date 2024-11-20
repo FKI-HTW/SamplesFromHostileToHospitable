@@ -71,6 +71,7 @@ class GameScene {
         window.addEventListener("resize", this.resize, false);
 
         this.eventManager.subscribe("placeObject", () => this.startTimeline());
+        this.eventManager.subscribe("stopScene", () => this.timeline.resetTimeline());
 
         this.renderer.setAnimationLoop(this.update);
     }
@@ -142,12 +143,13 @@ class GameScene {
 
     private async startTimeline() {
         if (!this.loadedJSON) return;
+        this.timeline.resetTimeline();
         await this.timeline.prepareMedia(this.loadedJSON);
         this.timeline.start();
-        this.timeline.setEvents(this.loadedJSON.pathAudioFiles.map(audioFile => ({
-            time: audioFile.time,
-            action: () => console.log(`Playing audio: ${audioFile.path}`)
-        })));
+        // this.timeline.setEvents(this.loadedJSON.pathAudioFiles.map(audioFile => ({
+        //     time: audioFile.time,
+        //     action: () => console.log(`Playing audio: ${audioFile.path}`)
+        // })));
     }
 
 }

@@ -55,7 +55,6 @@ class ARManager {
         this.hitTestSource = null;
         UI_Injector.getInstance().removeStartButton();
 
-        // TODO Timeline
         this.eventManager.emit("placeObject");
     }
 
@@ -80,6 +79,7 @@ class ARManager {
                     this.arButton.style.pointerEvents = "none";
                     this.contentObject = null;
                 }
+                this.eventManager.emit("stopScene");
             });
         }
     }

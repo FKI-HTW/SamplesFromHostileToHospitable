@@ -57,22 +57,51 @@ export default class Timeline {
 
   }
 
+  public resetTimeline() {
+    this.events = [];
+
+    this.loadedAudios.forEach(audio => {
+      if (audio.isPlaying) {
+        audio.stop();
+      }
+    });
+    this.loadedAudios = [];
+
+    this.clock = new Clock();
+    this.lastTime = 0;
+
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      this.mixer = undefined;
+    }
+
+    this.loadedJSON = null;
+  }
+
   public async prepareMedia(json: JSONDataItem): Promise<void> {
-    if (json) this.loadedJSON = json;
+    if (!json) return;
+
+    this.loadedJSON = json;
+
 
     if (this.loadedJSON?.pathAudioFiles) {
-        for (const audioFile of this.loadedJSON.pathAudioFiles) {
-            console.log(`Path: ${audioFile.path}, Time: ${audioFile.time}`);
-            try {
-                const audio = await this.loadAudio(audioFile.path);
-                if(audio)
-                  this.loadedAudios.push(audio);
-            } catch (error) {
-                console.error(`Fehler beim Laden von ${audioFile.path}`, error);
-            }
+      for (const audioFile of this.loadedJSON.pathAudioFiles) {
+        console.log(`Path: ${audioFile.path}, Time: ${audioFile.time}`);
+        try {
+          const audio = await this.loadAudio(audioFile.path);
+          if (audio) {
+            this.loadedAudios.push(audio);
+
+            this.events.push(
+              { time: audioFile.time, action: () => { audio.play() } }
+            )
+          }
+        } catch (error) {
+          console.error(`Fehler beim Laden von ${audioFile.path}`, error);
         }
+      }
     }
-}
+  }
 
 
 
@@ -133,36 +162,36 @@ export default class Timeline {
   async loadAudio(path: string): Promise<THREE.Audio | null> {
     let audio: THREE.Audio | null = null; // Typ explizit angeben
     try {
-        audio = await this.prepareAudio(path);
+      audio = await this.prepareAudio(path);
     } catch (error) {
-        console.error('Error preparing audio:', error);
-        return null; // Rückgabe von null bei Fehler
+      console.error('Error preparing audio:', error);
+      return null; // Rückgabe von null bei Fehler
     }
 
     return audio;
-}
+  }
 
 
 
-prepareAudio(audioPath: string): Promise<THREE.Audio> {
-  const audioLoader = new THREE.AudioLoader();
-  return new Promise((resolve, reject) => {
+  prepareAudio(audioPath: string): Promise<THREE.Audio> {
+    const audioLoader = new THREE.AudioLoader();
+    return new Promise((resolve, reject) => {
       const hasAudioExtension = /\.(mp3|wav|m4a)$/.test(audioPath);
       if (hasAudioExtension) {
-          audioLoader.load(audioPath, (buffer) => {
-              const listener = new THREE.AudioListener();
-              const readyAudio = new THREE.Audio(listener);
-              readyAudio.setBuffer(buffer);
-              readyAudio.isPlaying = false;
-              resolve(readyAudio); // Gibt ein THREE.Audio-Objekt zurück
-          }, undefined, (err) => {
-              reject(err);
-          });
+        audioLoader.load(audioPath, (buffer) => {
+          const listener = new THREE.AudioListener();
+          const readyAudio = new THREE.Audio(listener);
+          readyAudio.setBuffer(buffer);
+          readyAudio.isPlaying = false;
+          resolve(readyAudio); // Gibt ein THREE.Audio-Objekt zurück
+        }, undefined, (err) => {
+          reject(err);
+        });
       } else {
-          reject(new Error('Invalid audio file extension'));
+        reject(new Error('Invalid audio file extension'));
       }
-  });
-}
+    });
+  }
 
 
   // Paramater needs a .scene object

@@ -11,7 +11,7 @@
         },
         {
             "path": "assets/audios/test2.mp3",
-            "time": 5
+            "time": 8
         }
     ]
     },
@@ -22,12 +22,12 @@
         "pathStencil": "assets/models/example1.glb",
         "pathAudioFiles": [
         {
-            "path": "assets/audios/test1.mp3",
+            "path": "assets/audios/test3.mp3",
             "time": 2
         },
         {
-            "path": "assets/audios/test2.mp3",
-            "time": 5
+            "path": "assets/audios/test4.mp3",
+            "time": 10
         }
     ]
     },
