@@ -29,7 +29,7 @@ Use the Chrome Browser. To Debug with Android Smartphone go to `chrome://inspect
 ## Features
 - Define 3D models and audios in json database
 - Select desired content in start screen
-- Place 3D content in WebAR with hit testing on found planes
+- Place 3D content in WebAR with [Hit Testing feature](https://immersive-web.github.io/hit-test/hit-testing-explainer.html) on found planes
 - Experience different contents with timeline feature
 ## Customize
 To add your custom content you can modify the following files:
@@ -55,7 +55,7 @@ To add your custom content you can modify the following files:
 To add and label a new button, adapt the following syntax. The :number argument in .prepareData relates to the content's position in database.json
 ![Image add new button](./public/assets/readme/newContentButton.png)
 ## Publish
-After making a build you get a /dist folder
+After making a build you get a /dist folder. <br>
 Upload it to any server that supports HTTPS. <br>
 [Netlify](https://app.netlify.com/) is for free.
 ## Contributing
